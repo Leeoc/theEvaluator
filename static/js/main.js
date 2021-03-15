@@ -33,6 +33,8 @@ testData = [
         }
     },
 ]
+// Global var data
+var Globaldata = [];
 
 const calcAverage = (obj) => {
     const values = Object.values(obj.meta).filter(a => typeof a == 'number');
@@ -40,41 +42,46 @@ const calcAverage = (obj) => {
 }
 
 
-const addEntry = () => {
+const addEntry = (name, integrity, difference, care, teamwork, reimagine) => {
     // ave = calcAverage()
     let obj = {
         "meta": {
-            "name": "Paul O'Connell",
-            "integrity": Math.floor(Math.random() * 5) + 1,
-            "difference": Math.floor(Math.random() * 5) + 1,
-            "care": Math.floor(Math.random() * 5) + 1,
-            "teamwork": Math.floor(Math.random() * 5) + 1,
-            "reimagine": Math.floor(Math.random() * 5) + 1,
+            "name": name,
+            "integrity": integrity,
+            "difference": difference,
+            "care": care,
+            "teamwork": teamwork,
+            "reimagine": reimagine,
             "avg": null
         }
     }
 
     obj.meta.avg = calcAverage(obj)
-    testData.push(obj)
+    Globaldata.push(obj)
 }
 
-const removeEntry = (id) => {
-    testData.splice(id);
+const readFile = (file) => {
+    var reader = new FileReader();
+    reader.onload = readSuccess;                                            
+    function readSuccess(evt) { 
+        const data = JSON.parse(evt.target.result);
+        Globaldata = data;
+        loadTable(data);                         
+    };
+    reader.readAsText(file);   
+}
+        
+const saveFile = (text, filename) =>{
+    const a = document.createElement('a');
+    a.setAttribute('href', 'data:text/plain;charset=utf-8,'+encodeURIComponent(JSON.stringify(text)));
+    a.setAttribute('download', filename);
+    a.click();
+    console.log('Downloaded Successfully!');
 }
 
-const saveData = (data) => {
-
-}
-
-for (let i = 0; i < 50; i++) {
-    addEntry();
-}
-
-$(document).ready(function () {
-    console.log(calcAverage(testData[2]));
-    console.log('ready');
+const loadTable = (data) => {
     $('#example').DataTable({
-        "data": testData,
+        "data": data,
         "columns": [
             { "data": "meta.name" },
             { "data": "meta.integrity" },
@@ -84,6 +91,69 @@ $(document).ready(function () {
             { "data": "meta.reimagine" },
             { "data": "meta.avg" },
         ]
+    });
+}
+
+ 
+$(document).ready(function () {
+    
+    // get data
+    $('#exampleModal').modal('show');
+    
+    // Upload / New project events
+    $("#uploadBtn").click(function () {
+        readFile(document.getElementById("uploadedFile").files[0]);
+        $('#exampleModal').modal('hide');
+    });
+
+    $("#newProjectBtn").click(function () {
+        $('#exampleModal').modal('hide');
+        loadTable();
+        $('#addNewEntry').modal('show');
+    });
+
+    // New entry logic
+    $("#add").click(function () {
+        $('#addNewEntry').modal('show');
+    });
+
+    $("#addNewSubmit").click(function () {
+        $('#addNewEntry').modal('hide');
+    });
+
+    $( "#addNew" ).submit(function( event ) {
+        event.preventDefault();
+        const inputs = $('#addNew :input');
+        let values = []; 
+        inputs.each(function () {
+            values.push($(this).val());
+        });
+        console.log(values);
+        addEntry(
+            values[0],
+            values[1],
+            values[2],
+            values[3],
+            values[4],
+            values[5],
+        )
+        console.log(Globaldata);
+        if ($.fn.DataTable.isDataTable( '#example' )) {
+            let dataTable = $('#example').DataTable();
+            console.log('inside');
+            dataTable.clear().draw();
+            dataTable.rows.add(Globaldata); // Add new data
+            dataTable.columns.adjust().draw(); // Redraw the DataTable
+        } else {
+            loadTable(Globaldata);
+        }
+        // $('#example').DataTable().clear().draw();
+        
+        // $('#example').DataTable().destroy();
+        // $('#example').DataTable().draw();
+
+
+        
     });
 });
 
