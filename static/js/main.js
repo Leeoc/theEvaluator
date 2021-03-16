@@ -1,49 +1,29 @@
-testData = [
-    {
-        "meta": {
-            "name": "Lee O'Connell",
-            "integrity": 5,
-            "difference": 4,
-            "care": 3,
-            "teamwork": 2,
-            "reimagine": 1,
-            "avg": 3
-        }
-    },
-    {
-        "meta": {
-            "name": "Trevor Andres",
-            "integrity": 2,
-            "difference": 3,
-            "care": 5,
-            "teamwork": 1,
-            "reimagine": 5,
-            "avg": 3.16
-        }
-    },
-    {
-        "meta": {
-            "name": "Paul O'Connell",
-            "integrity": 5,
-            "difference": 5,
-            "care": 4,
-            "teamwork": 5,
-            "reimagine": 4,
-            "avg": 4.33
-        }
-    },
-]
 // Global var data
 var Globaldata = [];
 
-const calcAverage = (obj) => {
-    const values = Object.values(obj.meta).filter(a => typeof a == 'number');
-    return parseFloat(values.reduce(function (p, c, i, a) { return p + (c / a.length) }, 0)).toFixed(2);
+/** 
+* Function to calculate the average of an array of numbers.
+* @param {array} arr - Array of int values to calculate average on.
+* @return {float} The average returned as a float.
+*/
+const calcAverage = (arr) => {
+    return parseFloat(arr.reduce(function (p, c, i, a) { return p + (c / a.length) }, 0)).toFixed(2);
 }
 
-
+/** 
+* Function to add an entry to the global data.
+* @param {string} name - The name of the person to add
+* @param {number} integrity, difference, care, teamwork, reimagine - PwC values of the person
+* @return {none}
+*/
 const addEntry = (name, integrity, difference, care, teamwork, reimagine) => {
-    // ave = calcAverage()
+    const avg = calcAverage(
+        [integrity,
+        difference,
+        care,
+        teamwork,
+        reimagine]
+    );
     let obj = {
         "meta": {
             "name": name,
@@ -52,14 +32,53 @@ const addEntry = (name, integrity, difference, care, teamwork, reimagine) => {
             "care": care,
             "teamwork": teamwork,
             "reimagine": reimagine,
-            "avg": null
+            "avg": avg
         }
     }
-
-    obj.meta.avg = calcAverage(obj)
     Globaldata.push(obj)
 }
 
+/** 
+* Function to remove an entry to the global data.
+* @param {number} index - The index of the row to remove
+* @return {none}
+*/
+const removeEntry = (index) => {
+    Globaldata.splice(index, 1);
+
+/** 
+* Function to edit an existing entry and update the global data
+* @param {number} index, integrity, difference, care, teamwork, reimagine - Index of the row and new number data to update
+* @return {none} 
+*/}
+const editEntry = (index, integrity, difference, care, teamwork, reimagine) =>{
+    const name = Globaldata[index].meta.name;
+    const avg = calcAverage(
+        [integrity,
+        difference,
+        care,
+        teamwork,
+        reimagine]
+    );
+    console.log(Globaldata[index]);
+
+    Globaldata[index] = {
+        "meta": {
+            "name": name,
+            "integrity": integrity,
+            "difference": difference,
+            "care": care,
+            "teamwork": teamwork,
+            "reimagine": reimagine,
+            "avg": avg
+        }
+    }
+}
+/** 
+* Function to read in a new file in json format, sets global data to file data.
+* @param {file} parameterNameHere - The file to be read
+* @return {none}
+*/
 const readFile = (file) => {
     var reader = new FileReader();
     reader.onload = readSuccess;                                            
@@ -70,15 +89,25 @@ const readFile = (file) => {
     };
     reader.readAsText(file);   
 }
-        
-const saveFile = (text, filename) =>{
-    const a = document.createElement('a');
-    a.setAttribute('href', 'data:text/plain;charset=utf-8,'+encodeURIComponent(JSON.stringify(text)));
-    a.setAttribute('download', filename);
-    a.click();
-    console.log('Downloaded Successfully!');
-}
 
+/** 
+* Function to save the file and download it in the browser
+* @param {object} data - Data object
+* @param {string} filename - Filename to be saved
+* @return {none}
+*/
+const saveFile = (data, filename) =>{
+    const today = new Date().toLocaleDateString()
+    const a = document.createElement('a');
+    a.setAttribute('href', 'data:text/plain;charset=utf-8,'+encodeURIComponent(JSON.stringify(data)));
+    a.setAttribute('download', filename + '_' + today);
+    a.click();
+}
+/** 
+* Function to initilise the table. 
+* @param {object} data - The data object to be loaded into the table
+* @return {none}
+*/
 const loadTable = (data) => {
     $('#example').DataTable({
         "data": data,
@@ -94,9 +123,32 @@ const loadTable = (data) => {
     });
 }
 
+/** 
+* Function to refresh the table. Should only be called after the loadTable has created the table! 
+* @param {DataTable} dataTable - The datatable to refresh
+* @return {none}
+*/
+const refreshTable = (dataTable) => {
+    for (const person in Globaldata){
+        console.log(person);
+        const avg = calcAverage([
+            Globaldata[person].meta.integrity,
+            Globaldata[person].meta.difference,
+            Globaldata[person].meta.care,
+            Globaldata[person].meta.teamwork,
+            Globaldata[person].meta.reimagine
+        ]);
+        Globaldata[person].meta.avg = avg;
+    }
+    dataTable.clear().draw();
+    dataTable.rows.add(Globaldata); // Add new data
+    dataTable.columns.adjust().draw(); // Redraw the DataTable
+}
+
  
 $(document).ready(function () {
-    
+    let dataTable;
+
     // get data
     $('#exampleModal').modal('show');
     
@@ -136,30 +188,68 @@ $(document).ready(function () {
             values[3],
             values[4],
             values[5],
-        )
+        );
         console.log(Globaldata);
         if ($.fn.DataTable.isDataTable( '#example' )) {
-            let dataTable = $('#example').DataTable();
-            console.log('inside');
-            dataTable.clear().draw();
-            dataTable.rows.add(Globaldata); // Add new data
-            dataTable.columns.adjust().draw(); // Redraw the DataTable
+            dataTable = $('#example').DataTable();
+            refreshTable(dataTable);
         } else {
             loadTable(Globaldata);
-        }
-        // $('#example').DataTable().clear().draw();
-        
-        // $('#example').DataTable().destroy();
-        // $('#example').DataTable().draw();
-
-
-        
+        }      
     });
-});
 
-    // <th>Name</th>
-    // <th>Act with integrity</th>
-    // <th>Make a difference</th>
-    // <th>Care</th>
-    // <th>Work together</th>
-    // <th>Reimagine the possible</th>
+    // Select table row logic
+    $('#example').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            $('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
+    
+    // Delete selected row logic
+    $('#delete').click( function () {
+        dataTable = $('#example').DataTable();
+        removeEntry(dataTable.row('.selected').index());
+        dataTable.row('.selected').remove().draw( false );
+        refreshTable(dataTable);
+    } );
+
+    // Edit selected row logic
+    $('#edit').click( function () {
+        $('#editEntry').modal('show');
+        dataTable = $('#example').DataTable();
+
+        $( "#editRow" ).submit(function( event ) {
+            event.preventDefault();
+            const inputs = $('#editRow :input');
+            let values = []; 
+            inputs.each(function () {
+                values.push($(this).val());
+            });
+            editEntry(
+                dataTable.row('.selected').index(),
+                values[0],
+                values[1],
+                values[2],
+                values[3],
+                values[4],
+                values[5],
+            );
+            refreshTable(dataTable);
+            $('#editEntry').modal('hide');
+        });
+    } );
+
+    // Save current data logic
+    $('#save').click( function () {
+        saveFile(Globaldata, 'test');
+    } );
+
+    // New project logic
+    $('#new').click( function () {
+        location.reload();
+    } );
+});

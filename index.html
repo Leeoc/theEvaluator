@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Test</title>
+    <title>theEvaluator</title>
     <meta name="description" />
     <!-- CSS -->
     <link
@@ -26,6 +26,7 @@
       integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="../static/css/main.css" />
 
     <!-- Scripts -->
     <script
@@ -49,12 +50,15 @@
     <!-- Header content -->
     <div class="container">
       <div class="row">
-        <div class="col float-left">
+        <div class="col-6" id="title">
           <h1>theEvaluator</h1>
         </div>
-        <div class="col float-right">
-          <button class="btn btn-primary" id="add">Add</button>
-          <button class="btn btn-danger" id="delete">Delete</button>
+        <div class="col-6" id="buttons">
+            <button class="btn btn-primary" id="new">New Project</button>
+            <button class="btn btn-primary" id="save">Save</button>
+            <button class="btn btn-primary" id="add">Add</button>
+            <button class="btn btn-danger" id="delete">Delete</button>
+            <button class="btn btn-warning" id="edit">Edit</button>
         </div>
       </div>
     </div>
@@ -73,7 +77,7 @@
         <div class="modal-body">
             
             <div class="container">
-                <div class="row">
+                <div class="row d-flex justify-content-center" id="uploadFileBox">
                     <label class="form-label" for="customFile">Please upload a file</label>
                     <div class="col-10" style="display: inline-block;">
                         <input type="file" class="form-control" id="uploadedFile" />
@@ -82,10 +86,10 @@
                         <button type="button" class="btn btn-primary" id="uploadBtn">Upload</button>
                     </div>
                 </div>
-                <br>
-                <div class="row">
+
+                <div class="row d-flex justify-content-center" id="startNewProject">
                     <label class="form-label" for="customFile">Start a new project</label>
-                    <div class="col-10" style="display: inline-block;">
+                    <div class="col-10 d-flex justify-content-center" style="display: inline-block;">
                         <button type="button" class="btn btn-primary" id="newProjectBtn">New Project</button>
                     </div>
                 </div>
@@ -120,32 +124,74 @@
                 </div>
                 <div class="form-group">
                     <label for="integrity">Act with Integrity</label>
-                    <input type="number" class="form-control" id="integrity" placeholder="Score">
+                    <input type="number" max="5" class="form-control" id="integrity" placeholder="Score">
                   </div>
                   <div class="form-group">
                     <label for="difference">Make a difference</label>
-                    <input type="number" class="form-control" id="difference" placeholder="Score">
+                    <input type="number" max="5" class="form-control" id="difference" placeholder="Score">
                   </div>
                   <div class="form-group">
                     <label for="care">Care</label>
-                    <input type="number" class="form-control" id="care" placeholder="Score">
+                    <input type="number" max="5" class="form-control" id="care" placeholder="Score">
                   </div>
                   <div class="form-group">
                     <label for="teamwork">Work together</label>
-                    <input type="number" class="form-control" id="teamwork" placeholder="Score">
+                    <input type="number" max="5" class="form-control" id="teamwork" placeholder="Score">
                   </div>
                   <div class="form-group">
                     <label for="reimagine">Reimagine the possible</label>
-                    <input type="number" class="form-control" id="reimagine" placeholder="Score">
+                    <input type="number" max="5" class="form-control" id="reimagine" placeholder="Score">
                   </div>
-                  <button type="submit" class="btn btn-primary" id="addNewSubmit">Add</button>
-                </form>
-
         </div>
         <div class="modal-footer">
-            
+            <button type="submit" class="btn btn-primary" id="addNewSubmit">Add</button>
+        </form>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+    <!-- New entry -->
+  <!-- Modal -->
+  <div class="modal fade" id="editEntry" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Data</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <h4>Edit Row</h4>
+            <form id="editRow">
+                <div class="form-group">
+                    <label for="integrity">Act with Integrity</label>
+                    <input type="number" max="5" class="form-control" id="editIntegrity" placeholder="Score">
+                  </div>
+                  <div class="form-group">
+                    <label for="difference">Make a difference</label>
+                    <input type="number" max="5" class="form-control" id="editDifference" placeholder="Score">
+                  </div>
+                  <div class="form-group">
+                    <label for="care">Care</label>
+                    <input type="number" max="5" class="form-control" id="editCare" placeholder="Score">
+                  </div>
+                  <div class="form-group">
+                    <label for="teamwork">Work together</label>
+                    <input type="number" max="5" class="form-control" id="editTeamwork" placeholder="Score">
+                  </div>
+                  <div class="form-group">
+                    <label for="reimagine">Reimagine the possible</label>
+                    <input type="number" max="5" class="form-control" id="editReimagine" placeholder="Score">
+                  </div>
+                  
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" id="editSubmit">Add</button>
+            </form>
+        </div>
       </div>
     </div>
   </div>

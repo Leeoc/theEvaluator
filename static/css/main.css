@@ -1,0 +1,22 @@
+#buttons {
+    position: relative;
+    top: 1rem;
+    left: 4.5rem;
+}
+
+#title {
+    position: relative;
+    top: 0.5rem; 
+}
+
+#uploadBtn {
+    margin-left: -1.5rem;
+}
+
+#startNewProject {
+    padding-top: 2rem;
+}
+
+#uploadFileBox {
+    padding-top: 1rem;
+}
