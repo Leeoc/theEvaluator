@@ -1,5 +1,8 @@
 // Global var data
 var Globaldata = [];
+var StarMode = false;
+var paging = true;
+var sorting = true;
 
 /** 
 * Function to calculate the average of an array of numbers.
@@ -102,6 +105,14 @@ const saveFile = (data, filename) =>{
     a.setAttribute('download', filename + '_' + today);
     a.click();
 }
+
+const createStar = (val) => {
+    if (StarMode) {
+        return `<div class="rateYo" data-rateyo-rating="${val}" data-rateyo-read-only="true"></div`
+    }
+    return val;
+    
+}
 /** 
 * Function to initilise the table. 
 * @param {object} data - The data object to be loaded into the table
@@ -113,41 +124,41 @@ const loadTable = (data) => {
         "columns": [
             { "data": "meta.name"},
             { "data": "meta.integrity",
-                render: function (data){
-                    return `<div class="rateYo" data-rateyo-rating="${data}"" data-rateyo-read-only="true"></div`;
-                }
+                render: function (data) {
+                    return createStar(data);
+                },
             },
             { "data": "meta.difference",
-                render: function (data){
-                    return `<div class="rateYo" data-rateyo-rating="${data}" data-rateyo-read-only="true"></div`;
-                }
+                render: function (data) {
+                    return createStar(data);
+                },
             },
             { "data": "meta.care",
-                render: function (data){
-                    return `<div class="rateYo" data-rateyo-rating="${data}" data-rateyo-read-only="true"></div`;
-                }
+                render: function (data) {
+                    return createStar(data);
+                },
             },
             { "data": "meta.teamwork",
-                render: function (data){
-                    return `<div class="rateYo" data-rateyo-rating="${data}" data-rateyo-read-only="true"></div`;
-                }
+                render: function (data) {
+                    return createStar(data);
+                },
             },
             { "data": "meta.reimagine",
-                render: function (data){
-                    return `<div class="rateYo" data-rateyo-rating="${data}" data-rateyo-read-only="true"></div`;
-                }
+                render: function (data) {
+                    return createStar(data);
+                },
             },
             { "data": "meta.avg",
-                render: function (data){
-                    return `<div class="rateYo" data-rateyo-rating="${data}" data-rateyo-read-only="true"></div`;
-                }
+                render: function (data) {
+                    return createStar(data);
+                },
             },
         ],
-        "createdRow": function (data){
-            return `<div class="rateYo" data-rateyo-rating="${data}" data-rateyo-read-only="true"></div`;
-        },
-        paging: false,
-        bSort: false,
+        // "createdRow": function (data){
+        //     return `<div class="rateYo" data-rateyo-rating="${data}" data-rateyo-read-only="true"></div`;
+        // },
+        paging: paging,
+        bSort: sorting,
         
     });
     $(".rateYo").rateYo({
@@ -290,5 +301,21 @@ $(document).ready(function () {
     // New project logic
     $('#new').click( function () {
         location.reload();
-    } );
+    });
+    
+    $('#stars').change(function () {
+        dataTable = $('#example').DataTable();
+        if ($(this).is(':checked')) {
+            console.log('checked');
+            StarMode = true;
+            paging = false;
+            sorting = false;
+            refreshTable(dataTable);
+        } else {
+            StarMode = false;
+            paging = true;
+            sorting = true;
+            refreshTable(dataTable);
+        }
+    })
 });
