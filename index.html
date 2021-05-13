@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>theEvaluator</title>
+    <title>PwC professionals - AI team</title>
     <meta name="description" />
     <!-- CSS -->
     <link
@@ -27,6 +27,7 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="../static/css/main.css" />
+    <link rel="stylesheet" href="static/js/star-rating/v2.3.2/jquery.rateyo.min.css"/>
 
     <!-- Scripts -->
     <script
@@ -44,14 +45,16 @@
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         crossorigin="anonymous"
     ></script>
+
   </head>
 
   <body>
+    
     <!-- Header content -->
     <div class="container">
       <div class="row">
         <div class="col-6" id="title">
-          <h1>theEvaluator</h1>
+          <h1>PwC professionals - AI team</h1>
         </div>
         <div class="col-6" id="buttons">
             <button class="btn btn-primary" id="new">New Project</button>
@@ -59,6 +62,11 @@
             <button class="btn btn-primary" id="add">Add</button>
             <button class="btn btn-danger" id="delete">Delete</button>
             <button class="btn btn-warning" id="edit">Edit</button>
+            <label>Star mode</label>
+            <label class="switch">
+              <input type="checkbox" id='stars'>
+              <span class="slider round"></span>
+            </label>
         </div>
       </div>
     </div>
@@ -75,7 +83,6 @@
           </button>
         </div>
         <div class="modal-body">
-            
             <div class="container">
                 <div class="row d-flex justify-content-center" id="uploadFileBox">
                     <label class="form-label" for="customFile">Please upload a file</label>
@@ -110,13 +117,12 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Upload Data</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Add Row</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-            <h4>Add Row</h4>
             <form id="addNew">
                 <div class="form-group">
                   <label for="name">Name</label>
@@ -124,23 +130,23 @@
                 </div>
                 <div class="form-group">
                     <label for="integrity">Act with Integrity</label>
-                    <input type="number" max="5" class="form-control" id="integrity" placeholder="Score">
+                    <div class="rateyo" id="integrity"></div>
                   </div>
                   <div class="form-group">
                     <label for="difference">Make a difference</label>
-                    <input type="number" max="5" class="form-control" id="difference" placeholder="Score">
+                    <div class="rateyo" id="difference"></div>
                   </div>
                   <div class="form-group">
                     <label for="care">Care</label>
-                    <input type="number" max="5" class="form-control" id="care" placeholder="Score">
+                    <div class="rateyo" id="care"></div>    
                   </div>
                   <div class="form-group">
-                    <label for="teamwork">Work together</label>
-                    <input type="number" max="5" class="form-control" id="teamwork" placeholder="Score">
+                    <label for="">Work together</label>
+                    <div class="rateyo" id="teamwork"></div>
                   </div>
                   <div class="form-group">
                     <label for="reimagine">Reimagine the possible</label>
-                    <input type="number" max="5" class="form-control" id="reimagine" placeholder="Score">
+                    <div class="rateyo" id="reimagine"></div>
                   </div>
         </div>
         <div class="modal-footer">
@@ -167,24 +173,24 @@
             <h4>Edit Row</h4>
             <form id="editRow">
                 <div class="form-group">
-                    <label for="integrity">Act with Integrity</label>
-                    <input type="number" max="5" class="form-control" id="editIntegrity" placeholder="Score">
+                    <label for="editIntegrity">Act with Integrity</label>
+                    <div class="rateyo" id="editIntegrity"></div>                  
+                </div>
+                  <div class="form-group">
+                    <label for="editDifference">Make a difference</label>
+                    <div class="rateyo" id="editDifference"></div>
                   </div>
                   <div class="form-group">
-                    <label for="difference">Make a difference</label>
-                    <input type="number" max="5" class="form-control" id="editDifference" placeholder="Score">
+                    <label for="editCare">Care</label>
+                    <div class="rateyo" id="editCare"></div>
                   </div>
                   <div class="form-group">
-                    <label for="care">Care</label>
-                    <input type="number" max="5" class="form-control" id="editCare" placeholder="Score">
+                    <label for="editTeamwork">Work together</label>
+                    <div class="rateyo" id="editTeamwork"></div>
                   </div>
                   <div class="form-group">
-                    <label for="teamwork">Work together</label>
-                    <input type="number" max="5" class="form-control" id="editTeamwork" placeholder="Score">
-                  </div>
-                  <div class="form-group">
-                    <label for="reimagine">Reimagine the possible</label>
-                    <input type="number" max="5" class="form-control" id="editReimagine" placeholder="Score">
+                    <label for="editReimagine">Reimagine the possible</label>
+                    <div class="rateyo" id="editReimagine"></div>
                   </div>
                   
         </div>
@@ -199,7 +205,7 @@
     <!-- Datatable -->
     <div class="col">
         <div class="container">
-        <table id="example" class="table table-striped table-bordered">
+        <table id="example" class="table table-striped table-bordered" width="100%">
             <thead>
             <tr>
                 <th>Name</th>
@@ -216,5 +222,7 @@
     </div>
 
     <script src="static/js/main.js"></script>
+    <script type="text/javascript" src="static/js/star-rating/v2.3.2/jquery.rateyo.js"></script>
+
   </body>
 </html>

@@ -1,5 +1,8 @@
 // Global var data
 var Globaldata = [];
+var StarMode = false;
+var paging = true;
+var sorting = true;
 
 /** 
 * Function to calculate the average of an array of numbers.
@@ -17,8 +20,8 @@ const calcAverage = (arr) => {
 * @return {none}
 */
 const addEntry = (name, integrity, difference, care, teamwork, reimagine) => {
-    const avg = calcAverage(
-        [integrity,
+    const avg = calcAverage([
+        integrity,
         difference,
         care,
         teamwork,
@@ -60,7 +63,6 @@ const editEntry = (index, integrity, difference, care, teamwork, reimagine) =>{
         teamwork,
         reimagine]
     );
-    console.log(Globaldata[index]);
 
     Globaldata[index] = {
         "meta": {
@@ -103,6 +105,14 @@ const saveFile = (data, filename) =>{
     a.setAttribute('download', filename + '_' + today);
     a.click();
 }
+
+const createStar = (val) => {
+    if (StarMode) {
+        return `<div class="rateYo" data-rateyo-rating="${val}" data-rateyo-read-only="true"></div`
+    }
+    return val;
+    
+}
 /** 
 * Function to initilise the table. 
 * @param {object} data - The data object to be loaded into the table
@@ -112,14 +122,47 @@ const loadTable = (data) => {
     $('#example').DataTable({
         "data": data,
         "columns": [
-            { "data": "meta.name" },
-            { "data": "meta.integrity" },
-            { "data": "meta.difference" },
-            { "data": "meta.care" },
-            { "data": "meta.teamwork" },
-            { "data": "meta.reimagine" },
-            { "data": "meta.avg" },
-        ]
+            { "data": "meta.name"},
+            { "data": "meta.integrity",
+                render: function (data) {
+                    return createStar(data);
+                },
+            },
+            { "data": "meta.difference",
+                render: function (data) {
+                    return createStar(data);
+                },
+            },
+            { "data": "meta.care",
+                render: function (data) {
+                    return createStar(data);
+                },
+            },
+            { "data": "meta.teamwork",
+                render: function (data) {
+                    return createStar(data);
+                },
+            },
+            { "data": "meta.reimagine",
+                render: function (data) {
+                    return createStar(data);
+                },
+            },
+            { "data": "meta.avg",
+                render: function (data) {
+                    return createStar(data);
+                },
+            },
+        ],
+        // "createdRow": function (data){
+        //     return `<div class="rateYo" data-rateyo-rating="${data}" data-rateyo-read-only="true"></div`;
+        // },
+        paging: paging,
+        bSort: sorting,
+        
+    });
+    $(".rateYo").rateYo({
+        starWidth: "30px"
     });
 }
 
@@ -129,25 +172,41 @@ const loadTable = (data) => {
 * @return {none}
 */
 const refreshTable = (dataTable) => {
-    for (const person in Globaldata){
-        console.log(person);
-        const avg = calcAverage([
-            Globaldata[person].meta.integrity,
-            Globaldata[person].meta.difference,
-            Globaldata[person].meta.care,
-            Globaldata[person].meta.teamwork,
-            Globaldata[person].meta.reimagine
-        ]);
-        Globaldata[person].meta.avg = avg;
+    dataTable.destroy();
+    loadTable(Globaldata);
+}
+
+const convertStarsToNum = (edit) => {
+    if (edit == true){
+        return [
+            $("#editIntegrity").rateYo("rating"),
+            $("#editDifference").rateYo("rating"),
+            $("#editCare").rateYo("rating"),
+            $("#editTeamwork").rateYo("rating"),
+            $("#editReimagine").rateYo("rating")
+        ];
+    } else {
+        return [
+            $('#name').val(),
+            $("#integrity").rateYo("rating"),
+            $("#difference").rateYo("rating"),
+            $("#care").rateYo("rating"),
+            $("#teamwork").rateYo("rating"),
+            $("#reimagine").rateYo("rating")
+        ];
     }
-    dataTable.clear().draw();
-    dataTable.rows.add(Globaldata); // Add new data
-    dataTable.columns.adjust().draw(); // Redraw the DataTable
 }
 
  
 $(document).ready(function () {
     let dataTable;
+    $(".rateyo").rateYo({
+        rating: 3,
+        numStars: 5,
+        halfStar: true,
+        minValue: 1,
+        maxValue: 5 
+    });
 
     // get data
     $('#exampleModal').modal('show');
@@ -175,12 +234,8 @@ $(document).ready(function () {
 
     $( "#addNew" ).submit(function( event ) {
         event.preventDefault();
-        const inputs = $('#addNew :input');
-        let values = []; 
-        inputs.each(function () {
-            values.push($(this).val());
-        });
-        console.log(values);
+
+        let values = convertStarsToNum();
         addEntry(
             values[0],
             values[1],
@@ -221,14 +276,10 @@ $(document).ready(function () {
     $('#edit').click( function () {
         $('#editEntry').modal('show');
         dataTable = $('#example').DataTable();
-
         $( "#editRow" ).submit(function( event ) {
             event.preventDefault();
-            const inputs = $('#editRow :input');
-            let values = []; 
-            inputs.each(function () {
-                values.push($(this).val());
-            });
+            let values = convertStarsToNum(true);
+            console.log(values);
             editEntry(
                 dataTable.row('.selected').index(),
                 values[0],
@@ -236,7 +287,6 @@ $(document).ready(function () {
                 values[2],
                 values[3],
                 values[4],
-                values[5],
             );
             refreshTable(dataTable);
             $('#editEntry').modal('hide');
@@ -251,5 +301,21 @@ $(document).ready(function () {
     // New project logic
     $('#new').click( function () {
         location.reload();
-    } );
+    });
+    
+    $('#stars').change(function () {
+        dataTable = $('#example').DataTable();
+        if ($(this).is(':checked')) {
+            console.log('checked');
+            StarMode = true;
+            paging = false;
+            sorting = false;
+            refreshTable(dataTable);
+        } else {
+            StarMode = false;
+            paging = true;
+            sorting = true;
+            refreshTable(dataTable);
+        }
+    })
 });
